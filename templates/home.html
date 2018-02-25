@@ -67,10 +67,20 @@
 <body>
     <div class="container grid-lg">
         <h2>Test</h2>
-        <div class="columns">
-            <div class='column'>
-                
+        <div class="columns" id="non-logged-in">
+            <div class='column col-3'>
+                You have to log-in!
+            </div>
+            <div class='column col-3'>
                 <button class="btn btn-primary"  id='loginButton'>Login</button>
+            </div>
+        </div>
+        <div class="columns" id="logged-in">
+            <div class='column col-3'>
+                Welcome <span id='span-username'></span>!
+            </div>
+            <div class='column col-3'>
+                <button class="btn btn-primary"  id='logoutButton'>Logout</button>
             </div>
         </div>
     </div>
@@ -86,6 +96,7 @@
         <div class="modal-body">
             <div class="content">
                 <form>
+                    {% csrf_token %}
                     <div class="form-group">
                         <label class="form-label" for="input-username">Username</label>
                         <input class="form-input" type="text" id="input-username" placeholder="Name">
@@ -110,10 +121,54 @@
     
     <script src='{% static "jquery-3.3.1.min.js" %}' ></script>
     <script>
+        var g_urls = {
+            'login': '{% url "rest_login" %}',
+            'logout': '{% url "rest_logout" %}',
+        };
+        var g_auth = localStorage.getItem("auth");
+        if(g_auth) {
+            try {
+                g_auth = JSON.parse(g_auth);
+            } catch(error) {
+                g_auth = null; 
+            }
+            console.log(g_auth);
+        }
+
+        var initLogin = function() {
+            if(g_auth) {
+                $('#non-logged-in').hide();
+                $('#logged-in').show();
+                $('#span-username').html(g_auth.username);
+                localStorage.setItem("auth", JSON.stringify(g_auth));
+            } else {
+                $('#non-logged-in').show();
+                $('#logged-in').hide();
+                $('#span-username').html('');
+                localStorage.setItem("auth", null);
+            }
+        }
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var g_csrftoken = getCookie('csrftoken');
+
         $(function () {
-            var auth = localStorage.getItem("auth");
-            console.log(auth);
-            
+            initLogin(); 
+
             $('#loginButton').click(function() {
                 $('#login-modal').addClass('active');
             });
@@ -125,7 +180,48 @@
             $('#loginOkButton').click(function() {
                 var username = $('#input-username').val();
                 var password = $('#input-password').val();
-                console.log("Will try to login with ", username, password);
+                if(username && password) {
+                    console.log("Will try to login with ", username, password);
+                    $('#modal-error').addClass('d-invisible');
+                    $.ajax({
+                        url: g_urls.login, 
+                        method: "POST", 
+                        data: {
+                            username: username,
+                            password: password,
+                            csrfmiddlewaretoken: g_csrftoken
+                        }
+                    }).done(function(data) {
+                        console.log("DONE: ", username, data.key);
+                        g_auth = {
+                            username: username,
+                            key: data.key,
+                        };
+                        $('#login-modal').removeClass('active');
+                        
+                        initLogin();
+                    }).fail(function(data) {
+                        console.log("FAIL", data);
+                        $('#modal-error').removeClass('d-invisible');
+                    });
+                } else {
+                    $('#modal-error').removeClass('d-invisible');
+                }
+            });
+
+            $('#logoutButton').click(function() {
+                console.log("Trying to logout");
+                $.ajax({
+                    url: g_urls.logout, 
+                    method: "GET", 
+                    
+                }).done(function(data) {
+                    console.log("DONE: ", data);
+                    g_auth = null;
+                    initLogin();
+                }).fail(function(data) {
+                    console.log("FAIL: ", data);
+                });
             });
             
         });

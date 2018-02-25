@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_auth', 
+    'rest_auth',
 ]
 
 MIDDLEWARE = [
@@ -121,3 +121,4 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated'
     ]
 }
+ACCOUNT_LOGOUT_ON_GET = True
