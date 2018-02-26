@@ -9,6 +9,7 @@
   <title>Home</title>
   <link rel="stylesheet" href='{% static "spectre.min.css" %}'>
   <link rel="stylesheet" href='{% static "spectre-icons.min.css" %}'>
+  <link rel="icon" href="{% static 'favicon.ico' %}">
   <style>
         .spinner {
             margin: 100px auto 0;
@@ -83,6 +84,15 @@
                 <button class="btn btn-primary"  id='logoutButton'>Logout</button>
             </div>
         </div>
+        <hr />
+        <div class="columns" id="test">
+            <div class='column col-3'>
+                <button class="btn btn-primary"  id='testAuthButton'>Test auth</button>
+            </div>
+            <div class='column col-9'>
+                <div id='test-auth-response' ></div>
+            </div>
+        </div>
     </div>
     
     
@@ -103,7 +113,12 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="input-password">Password</label>
-                        <input class="form-input" type="password" id="input-password" placeholder="Name">
+                        <input class="form-input" type="password" id="input-password" placeholder="Password">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-checkbox" for="input-local-storage">
+                            <input type="checkbox" id="input-local-storage" /> <i class="form-icon"></i>  Use local storage (remember me)
+                        </label>
                     </div>
                 </form>
                 <div class='label label-error mt-1 d-invisible' id='modal-error'>
@@ -124,15 +139,19 @@
         var g_urls = {
             'login': '{% url "rest_login" %}',
             'logout': '{% url "rest_logout" %}',
+            'test_auth': '{% url "test_auth" %}',
         };
         var g_auth = localStorage.getItem("auth");
+        if(g_auth == null) {
+            g_auth = sessionStorage.getItem("auth");
+        }
+        
         if(g_auth) {
             try {
                 g_auth = JSON.parse(g_auth);
             } catch(error) {
                 g_auth = null; 
             }
-            console.log(g_auth);
         }
 
         var initLogin = function() {
@@ -140,13 +159,21 @@
                 $('#non-logged-in').hide();
                 $('#logged-in').show();
                 $('#span-username').html(g_auth.username);
-                localStorage.setItem("auth", JSON.stringify(g_auth));
+                if(g_auth.remember_me) {
+                    console.log("Setting auth for local storage");
+                    localStorage.setItem("auth", JSON.stringify(g_auth));
+                } else {
+                    console.log("Setting auth for session storage");
+                    sessionStorage.setItem("auth", JSON.stringify(g_auth));
+                }
             } else {
                 $('#non-logged-in').show();
                 $('#logged-in').hide();
                 $('#span-username').html('');
-                localStorage.setItem("auth", null);
+                localStorage.removeItem("auth");
+                sessionStorage.removeItem("auth");
             }
+            $('#test-auth-response').html("");
         }
 
         function getCookie(name) {
@@ -180,6 +207,7 @@
             $('#loginOkButton').click(function() {
                 var username = $('#input-username').val();
                 var password = $('#input-password').val();
+                var remember_me = $('#input-local-storage').prop('checked');
                 if(username && password) {
                     console.log("Will try to login with ", username, password);
                     $('#modal-error').addClass('d-invisible');
@@ -196,6 +224,7 @@
                         g_auth = {
                             username: username,
                             key: data.key,
+                            remember_me: remember_me
                         };
                         $('#login-modal').removeClass('active');
                         
@@ -214,7 +243,6 @@
                 $.ajax({
                     url: g_urls.logout, 
                     method: "GET", 
-                    
                 }).done(function(data) {
                     console.log("DONE: ", data);
                     g_auth = null;
@@ -224,6 +252,23 @@
                 });
             });
             
+            $('#testAuthButton').click(function() {
+                $.ajax({
+                    url: g_urls.test_auth, 
+                    method: "GET", 
+                    beforeSend: function(request) {
+                        if(g_auth) {
+                            request.setRequestHeader("Authority", "Token " + g_auth.key);
+                        }
+                    },
+                }).done(function(data) {
+                    console.log("DONE: ", data);
+                    $('#test-auth-response').html("<span class='label label-success'>Ok! Response: " + data);
+                }).fail(function(data) {
+                    console.log("FAIL: ", data);
+                     $('#test-auth-response').html("<span class='label label-error'>Fail! Response: " + data.responseText + " (status: " + data.status+")</span>");
+                });
+            });
         });
         
 

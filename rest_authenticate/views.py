@@ -8,10 +8,10 @@ from rest_framework import authentication, permissions
 class HomeTemplateView(TemplateView):
     template_name = 'home.html'
 
-    
+
 class TestAuthView(APIView):
     # authentication_classes = (authentication.TokenAuthentication,)
     # permission_classes = (permissions.IsAdminUser,)
 
     def get(self, request, format=None):
-        return Response("OK")    
+        return Response("Hello {0}!".format(request.user))
