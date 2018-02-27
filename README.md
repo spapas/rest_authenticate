@@ -9,6 +9,7 @@ mkdir rest_authenticate
 cd rest_authenticate
 
 # Create a virtual env with your preferable method
+# More info here: https://spapas.github.io/2017/12/20/python-2-3-windows/
 py -3 -m venv venv
 venb\bin\activate
 
