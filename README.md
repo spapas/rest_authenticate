@@ -2,6 +2,8 @@
 
 Read the tutorial @ https://spapas.github.io
 
+Careful: Works only with python 3.x
+
 To install and run (this is for Windows cmd, change accordingly for unix/macos):
 
 ```
