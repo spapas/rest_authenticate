@@ -227,7 +227,8 @@
                             remember_me: remember_me
                         };
                         $('#login-modal').removeClass('active');
-                        
+                        // CAREFUL! csrf token is rotated after login: https://docs.djangoproject.com/en/1.7/releases/1.5.2/#bugfixes
+                        g_csrftoken = getCookie('csrftoken');
                         initLogin();
                     }).fail(function(data) {
                         console.log("FAIL", data);
@@ -242,7 +243,10 @@
                 console.log("Trying to logout");
                 $.ajax({
                     url: g_urls.logout, 
-                    method: "GET", 
+                    method: "POST", 
+                    data: {
+                        csrfmiddlewaretoken: g_csrftoken
+                    }
                 }).done(function(data) {
                     console.log("DONE: ", data);
                     g_auth = null;
@@ -258,7 +262,7 @@
                     method: "GET", 
                     beforeSend: function(request) {
                         if(g_auth) {
-                            request.setRequestHeader("Authority", "Token " + g_auth.key);
+                            request.setRequestHeader("Authorization", "Token " + g_auth.key);
                         }
                     },
                 }).done(function(data) {
