@@ -11,59 +11,7 @@
   <link rel="stylesheet" href='{% static "spectre-icons.min.css" %}'>
   <link rel="icon" href="{% static 'favicon.ico' %}">
   <style>
-        .spinner {
-            margin: 100px auto 0;
-            width: 70px;
-            text-align: center;
-        }
-        
-        .spinner>div {
-            width: 18px;
-            height: 18px;
-            background-color: #333;
-            border-radius: 100%;
-            display: inline-block;
-            -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
-            animation: sk-bouncedelay 1.4s infinite ease-in-out both;
-        }
-        
-        .spinner .bounce1 {
-            -webkit-animation-delay: -0.32s;
-            animation-delay: -0.32s;
-        }
-        
-        .spinner .bounce2 {
-            -webkit-animation-delay: -0.16s;
-            animation-delay: -0.16s;
-        }
-        
-        @-webkit-keyframes sk-bouncedelay {
-            0%,
-            80%,
-            100% {
-                -webkit-transform: scale(0)
-            }
-            40% {
-                -webkit-transform: scale(1.0)
-            }
-        }
-        
-        @keyframes sk-bouncedelay {
-            0%,
-            80%,
-            100% {
-                -webkit-transform: scale(0);
-                transform: scale(0);
-            }
-            40% {
-                -webkit-transform: scale(1.0);
-                transform: scale(1.0);
-            }
-        }
- 
-
-    </style>
-    
+  </style>
 </head>
 <body>
     <div class="container grid-lg">
@@ -95,44 +43,43 @@
         </div>
     </div>
     
-    
-<div class="modal" id="login-modal">
-    <a href="#close" class="modal-overlay close-modal" aria-label="Close"></a>
-    <div class="modal-container">
-        <div class="modal-header">
-            <a href="#close" class="btn btn-clear float-right close-modal" aria-label="Close"></a>
-            <div class="modal-title h5">Please login</div>
-        </div>
-        <div class="modal-body">
-            <div class="content">
-                <form>
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label class="form-label" for="input-username">Username</label>
-                        <input class="form-input" type="text" id="input-username" placeholder="Name">
+    <div class="modal" id="login-modal">
+        <a href="#close" class="modal-overlay close-modal" aria-label="Close"></a>
+        <div class="modal-container">
+            <div class="modal-header">
+                <a href="#close" class="btn btn-clear float-right close-modal" aria-label="Close"></a>
+                <div class="modal-title h5">Please login</div>
+            </div>
+            <div class="modal-body">
+                <div class="content">
+                    <form>
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="form-label" for="input-username">Username</label>
+                            <input class="form-input" type="text" id="input-username" placeholder="Name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="input-password">Password</label>
+                            <input class="form-input" type="password" id="input-password" placeholder="Password">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-checkbox" for="input-local-storage">
+                                <input type="checkbox" id="input-local-storage" /> <i class="form-icon"></i>  Use local storage (remember me)
+                            </label>
+                        </div>
+                    </form>
+                    <div class='label label-error mt-1 d-invisible' id='modal-error'>
+                        Unable to login!
                     </div>
-                    <div class="form-group">
-                        <label class="form-label" for="input-password">Password</label>
-                        <input class="form-input" type="password" id="input-password" placeholder="Password">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-checkbox" for="input-local-storage">
-                            <input type="checkbox" id="input-local-storage" /> <i class="form-icon"></i>  Use local storage (remember me)
-                        </label>
-                    </div>
-                </form>
-                <div class='label label-error mt-1 d-invisible' id='modal-error'>
-                    Unable to login!
                 </div>
             </div>
+            <div class="modal-footer">
+                
+                <button class="btn btn-primary" id='loginOkButton' >Ok</button>
+                <a href="#close" class="btn close-modal" >Close</a>
+            </div>
         </div>
-        <div class="modal-footer">
-            
-            <button class="btn btn-primary" id='loginOkButton' >Ok</button>
-            <a href="#close" class="btn close-modal" >Close</a>
-        </div>
-    </div>
-</div>    
+    </div>    
     
     <script src='{% static "jquery-3.3.1.min.js" %}' ></script>
     <script>
@@ -160,10 +107,8 @@
                 $('#logged-in').show();
                 $('#span-username').html(g_auth.username);
                 if(g_auth.remember_me) {
-                    console.log("Setting auth for local storage");
                     localStorage.setItem("auth", JSON.stringify(g_auth));
                 } else {
-                    console.log("Setting auth for session storage");
                     sessionStorage.setItem("auth", JSON.stringify(g_auth));
                 }
             } else {
@@ -176,7 +121,7 @@
             $('#test-auth-response').html("");
         }
 
-        function getCookie(name) {
+        var getCookie = function(name) {
             var cookieValue = null;
             if (document.cookie && document.cookie !== '') {
                 var cookies = document.cookie.split(';');
@@ -266,16 +211,12 @@
                         }
                     },
                 }).done(function(data) {
-                    console.log("DONE: ", data);
                     $('#test-auth-response').html("<span class='label label-success'>Ok! Response: " + data);
                 }).fail(function(data) {
-                    console.log("FAIL: ", data);
-                     $('#test-auth-response').html("<span class='label label-error'>Fail! Response: " + data.responseText + " (status: " + data.status+")</span>");
+                    $('#test-auth-response').html("<span class='label label-error'>Fail! Response: " + data.responseText + " (status: " + data.status+")</span>");
                 });
             });
         });
-        
-
         
     </script>
   
