@@ -205,6 +205,9 @@
                 $.ajax({
                     url: g_urls.logout, 
                     method: "POST", 
+                    beforeSend: function(request) {
+                        request.setRequestHeader("Authorization", "Token " + g_auth.key);
+                    },
                     data: {
                         csrfmiddlewaretoken: g_csrftoken
                     }
