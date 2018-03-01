@@ -1,6 +1,6 @@
 # rest_authenticate
 
-Read the tutorial @ https://spapas.github.io
+Read the sister article of the project @ https://spapas.github.io/2018/03/01/django-rest-auth/
 
 Careful: Works only with python 3.x
 
