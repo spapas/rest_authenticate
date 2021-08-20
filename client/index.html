@@ -110,23 +110,6 @@
             }
         }
 
-        var getCookie = function(name) {
-            var cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                var cookies = document.cookie.split(';');
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = jQuery.trim(cookies[i]);
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        };
-        var g_csrftoken = getCookie('csrftoken');
-
         var initLogin = function() {
             if(g_auth) {
                 $('#non-logged-in').hide();
@@ -203,8 +186,7 @@
                         method: "POST", 
                         data: {
                             username: username,
-                            password: password,
-                            csrfmiddlewaretoken: g_csrftoken
+                            password: password
                         }
                     }).done(function(data) {
                         console.log("DONE: ", username, data.key);
@@ -215,8 +197,6 @@
                         };
                         $('#login-modal').removeClass('active');
                         initLogin();
-                        // CAREFUL! csrf token is rotated after login: https://docs.djangoproject.com/en/1.7/releases/1.5.2/#bugfixes
-                        g_csrftoken = getCookie('csrftoken');
                     }).fail(function(data) {
                         console.log("FAIL", data);
                         $('#modal-error').removeClass('d-invisible');
@@ -234,9 +214,7 @@
                     beforeSend: function(request) {
                         request.setRequestHeader("Authorization", "Token " + g_auth.key);
                     },
-                    data: {
-                        csrfmiddlewaretoken: g_csrftoken
-                    }
+                    
                 }).done(function(data) {
                     console.log("DONE: ", data);
                     g_auth = null;
