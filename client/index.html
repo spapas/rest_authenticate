@@ -41,6 +41,15 @@
                 <div id='test-auth-response' ></div>
             </div>
         </div>
+        <hr />
+        <div class="columns" id="test">
+            <div class='column col-3'>
+                <button class="btn btn-primary"  id='testAuthPostButton'>Test auth (POST)</button>
+            </div>
+            <div class='column col-9'>
+                <div id='test-auth-post-response' ></div>
+            </div>
+        </div>
     </div>
     
     <div class="modal" id="login-modal">
@@ -53,7 +62,7 @@
             <div class="modal-body">
                 <div class="content">
                     <form>
-                        {% csrf_token %}
+                        
                         <div class="form-group">
                             <label class="form-label" for="input-username">Username</label>
                             <input class="form-input" type="text" id="input-username" placeholder="Name">
@@ -136,6 +145,7 @@
                 sessionStorage.removeItem("auth");
             }
             $('#test-auth-response').html("");
+            $('#test-auth-post-response').html("");
         };
 
         $(function () {
@@ -162,6 +172,22 @@
                     $('#test-auth-response').html("<span class='label label-success'>Ok! Response: " + data);
                 }).fail(function(data) {
                     $('#test-auth-response').html("<span class='label label-error'>Fail! Response: " + data.responseText + " (status: " + data.status+")</span>");
+                });
+            });
+
+            $('#testAuthPostButton').click(function() {
+                $.ajax({
+                    url: g_urls.test_auth, 
+                    method: "POST", 
+                    beforeSend: function(request) {
+                        if(g_auth) {
+                            request.setRequestHeader("Authorization", "Token " + g_auth.key);
+                        }
+                    }
+                }).done(function(data) {
+                    $('#test-auth-post-response').html("<span class='label label-success'>Ok! Response: " + data);
+                }).fail(function(data) {
+                    $('#test-auth-post-response').html("<span class='label label-error'>Fail! Response: " + data.responseText + " (status: " + data.status+")</span>");
                 });
             });
             

@@ -17,6 +17,9 @@ class TestAuthView(APIView):
 
     def get(self, request, format=None):
         return Response("Hello {0}!".format(request.user))
+    
+    def post(self, request, format=None):
+        return Response("Hello {0}! Posted!".format(request.user))
 
 
 class LogoutViewEx(LogoutView):
