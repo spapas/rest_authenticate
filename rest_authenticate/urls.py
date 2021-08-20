@@ -4,7 +4,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 from .views import HomeTemplateView, TestAuthView, LogoutViewEx
-from rest_auth.views import LoginView
+from dj_rest_auth.views import LoginView
 
 
 urlpatterns = [
