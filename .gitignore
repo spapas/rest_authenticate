@@ -95,7 +95,7 @@ celerybeat-schedule.*
 .venv
 env/
 venv/
-ENV/
+ENV/﻿​_
 env.bak/
 venv.bak/
 
@@ -114,3 +114,4 @@ venv.bak/
 
 
 # End of https://www.gitignore.io/api/django,python
+.vscode
