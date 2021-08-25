@@ -120,3 +120,4 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_URL = '/static/'
+REST_SESSION_LOGIN = True
