@@ -9,4 +9,4 @@ Pillow==10.3.0
 pytz==2021.1
 six==1.11.0
 typing==3.7.4.3
-Werkzeug==3.0.1
+Werkzeug==3.0.3
